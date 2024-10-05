@@ -1,0 +1,81 @@
+<head></head>
+
+<body>
+    <p>There is <span id="n-questions"></span> sample tests indexed from <span id="min-test-id"></span> to
+        <span id="max-test-id"></span>.
+    </p>
+
+    <div>
+        <div><button onclick="generateRandomTest()">Generate Random Test</button></div>
+        <strong>OR</strong>
+        <div>
+            <input id="input-test-id" placeholder="001"></input>
+            <button onclick="loadSpecificTest()">Pick Specific Test Id</button>
+        </div>
+    </div>
+
+    <p id="test-id"></p>
+    <h3 id="main-question"></h3>
+    <p id="description"></p>
+    <p id="extra-prompt"></p>
+
+    <script>
+        const N_QUESTIONS = 36;
+
+        document.getElementById("n-questions").innerHTML = N_QUESTIONS;
+        document.getElementById("min-test-id").innerHTML = "001";
+        document.getElementById("max-test-id").innerHTML = String(N_QUESTIONS).padStart(3, '0');
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function removePrefix(str, prefix) {
+            return str.startsWith(prefix) ? str.substring(prefix.length) : str;
+        }
+
+        function loadQuestion(testIdInt) {
+            const testIdStr = String(testIdInt).padStart(3, '0');
+            fetch(`speaking-problems/task-2-${testIdStr}.txt`).then(
+                resp => resp.text()
+            ).then(
+                text => {
+                    const lines = text.split("\n");
+                    const mainQuestion = lines[0];
+
+                    const descriptionLines = lines.slice(1, lines.length - 1)
+                        .filter(v => v.trim() != "");
+
+                    let description = `<p>${descriptionLines[0]}</p>`;
+                    description += `<ul>`;
+                    for (var i = 1; i < descriptionLines.length - 1; i++) {
+                        const content = removePrefix(descriptionLines[i].trim(), "-").trim();
+                        description += `<li>${content}</li>`
+                    }
+                    description += `</ul>`;
+
+                    const extraPrompt = lines[lines.length - 1];
+
+                    document.getElementById("test-id").innerHTML = `Test id: ${testIdStr}`;
+                    document.getElementById("main-question").innerHTML = mainQuestion;
+                    document.getElementById("description").innerHTML = description;
+                    document.getElementById("extra-prompt").innerHTML = extraPrompt;
+                }
+            )
+        }
+
+        function generateRandomTest() {
+            const selectedTestId = getRandomInt(1, N_QUESTIONS);
+            loadQuestion(selectedTestId);
+        }
+
+        function loadSpecificTest() {
+            const input = document.getElementById("input-test-id").value;
+
+            if (input) {
+                const inputInt = parseInt(input);
+                loadQuestion(inputInt);
+            }
+        }
+    </script>
+</body>
