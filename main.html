@@ -1,23 +1,34 @@
 <head></head>
 
 <body>
-    <p>There is <span id="n-questions"></span> sample tests indexed from <span id="min-test-id"></span> to
-        <span id="max-test-id"></span>.
-    </p>
+    <div id="root">
+        <div id="query-form">
+            <p>There are <span id="n-questions"></span> sample tests indexed from <span id="min-test-id"></span> to
+                <span id="max-test-id"></span>.
+            </p>
 
-    <div>
-        <div><button onclick="generateRandomTest()">Generate Random Test</button></div>
-        <strong>OR</strong>
-        <div>
-            <input id="input-test-id" placeholder="001"></input>
-            <button onclick="loadSpecificTest()">Pick Specific Test Id</button>
+            <div id="button-container">
+                <div>
+                    <button class="button" onclick="generateRandomTest()">
+                        Generate Random Test
+                    </button>
+                </div>
+                <div>
+                    <strong>OR</strong>
+                </div>
+                <div>
+                    <input id="input-test-id" placeholder="001"></input>
+                    <button class="button" onclick="loadSpecificTest()">Pick Specific Test Id</button>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <p id="test-id"></p>
-    <h3 id="main-question"></h3>
-    <p id="description"></p>
-    <p id="extra-prompt"></p>
+
+        <p id="test-id"></p>
+        <h2 id="main-question"></h2>
+        <p id="description"></p>
+        <p id="extra-prompt"></p>
+    </div>
 
     <script>
         const N_QUESTIONS = 36;
@@ -53,6 +64,7 @@
                         description += `<li>${content}</li>`
                     }
                     description += `</ul>`;
+                    description += `${descriptionLines[descriptionLines.length - 1]}`;
 
                     const extraPrompt = lines[lines.length - 1];
 
@@ -78,4 +90,34 @@
             }
         }
     </script>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+        }
+
+        #root {
+            width: 840px;
+        }
+
+        #query-form {
+            font-size: xx-large;
+        }
+
+        #button-container>div {
+            margin: 20px 0 20px 0;
+        }
+
+        button,
+        input {
+            font-size: inherit;
+        }
+
+
+        #extra-prompt {
+            color: #777777;
+            font-size: 90%;
+        }
+    </style>
 </body>
