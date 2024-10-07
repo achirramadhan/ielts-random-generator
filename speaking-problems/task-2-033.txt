@@ -1,11 +1,7 @@
-Describe a time when you lost an important item.
+Describe a time you were late for a meeting
 
 You should say:
-
-- when and where it happened
-- what it was
-- how important and valuable it was
-
-And explain how you lost it.
-
-And you will have to talk about the topic for one to two minutes. You have one minute to think about what you are going to say. You can make some notes to help you if you wish.
+- what the meeting was for
+- when the meeting was
+- where the meeting was
+and explain why you were late

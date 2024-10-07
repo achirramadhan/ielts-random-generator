@@ -28,10 +28,13 @@
         <h2 id="main-question"></h2>
         <p id="description"></p>
         <p id="extra-prompt"></p>
+        <div id="follow-up"></div>
     </div>
 
     <script>
         const N_QUESTIONS = 36;
+        let globalFollowUpList = [];
+        let currentFollowUpOffset = 0;
 
         document.getElementById("n-questions").innerHTML = N_QUESTIONS;
         document.getElementById("min-test-id").innerHTML = "001";
@@ -54,24 +57,47 @@
                     const lines = text.split("\n");
                     const mainQuestion = lines[0];
 
-                    const descriptionLines = lines.slice(1, lines.length - 1)
+                    let endOfDescription = lines.length - 1;
+                    for (let i = 1; i < lines.length; i++) {
+                        if (lines[i].startsWith("Follow up")) {
+                            endOfDescription = i - 1;
+                            break;
+                        }
+                    }
+
+                    const descriptionLines = lines.slice(1, endOfDescription)
                         .filter(v => v.trim() != "");
 
                     let description = `<p>${descriptionLines[0]}</p>`;
                     description += `<ul>`;
-                    for (var i = 1; i < descriptionLines.length - 1; i++) {
+                    for (let i = 1; i < descriptionLines.length - 1; i++) {
                         const content = removePrefix(descriptionLines[i].trim(), "-").trim();
                         description += `<li>${content}</li>`
                     }
                     description += `</ul>`;
                     description += `${descriptionLines[descriptionLines.length - 1]}`;
 
-                    const extraPrompt = lines[lines.length - 1];
+                    const extraPrompt = "And you will have to talk about the topic for one to two minutes."
+                        + " You have one minute to think about what you are going to say. You can make some notes to help you if you wish.";
 
                     document.getElementById("test-id").innerHTML = `Test id: ${testIdStr}`;
                     document.getElementById("main-question").innerHTML = mainQuestion;
                     document.getElementById("description").innerHTML = description;
                     document.getElementById("extra-prompt").innerHTML = extraPrompt;
+
+                    if (endOfDescription != lines.length - 1) {
+                        let followUpLines = lines.slice(endOfDescription, lines.length - 1).filter(v => v.trim() != "");
+                        globalFollowUpList = followUpLines.slice(1);
+                        currentFollowUpOffset = 0;
+
+                        let followUp = `<p>${followUpLines[0]} (${followUpLines.length - 1})</p>`
+                            + ` <button id="follow-up-button" onclick="revealNextFollowUp()">Reveal</button>`
+                            + ` <ul id="follow-up-list"></ul>`;
+
+                        document.getElementById("follow-up").innerHTML = followUp;
+                    } else {
+                        document.getElementById("follow-up").innerHTML = "";
+                    }
                 }
             )
         }
@@ -88,6 +114,21 @@
                 const inputInt = parseInt(input);
                 loadQuestion(inputInt);
             }
+        }
+
+        function revealNextFollowUp() {
+            if (currentFollowUpOffset >= globalFollowUpList.length) {
+                console.debug(`No more element. 'currentFollowUpOffset=${currentFollowUpOffset}'. 'globalFollowUpList=${globalFollowUpList}'`)
+                return;
+            }
+
+            const content = removePrefix(globalFollowUpList[currentFollowUpOffset].trim(), "-").trim();
+
+            const newFollowUpElement = document.createElement("li");
+            newFollowUpElement.innerText = content;
+            document.getElementById("follow-up-list").append(newFollowUpElement);
+
+            currentFollowUpOffset += 1;
         }
     </script>
 
@@ -114,10 +155,13 @@
             font-size: inherit;
         }
 
-
         #extra-prompt {
             color: #777777;
             font-size: 90%;
+        }
+
+        #follow-up-button {
+            font-size: xx-large;
         }
     </style>
 </body>
